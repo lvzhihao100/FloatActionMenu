@@ -37,6 +37,7 @@ public class RapidFloatingActionLayout extends RelativeLayout implements OnClick
 
     String bigButtonLabel = "Label";
     TextView bigButtonLabelTextView;
+    private boolean isLabelVisible = false;
 
     public String getBigButtonLabel() {
         return bigButtonLabel;
@@ -233,8 +234,14 @@ public class RapidFloatingActionLayout extends RelativeLayout implements OnClick
         }
     }
 
+    public void setLabelVisibility(boolean isVisible) {
+        isLabelVisible = isVisible;
+    }
+
     private void showLabel() {
-        bigButtonLabelTextView.setVisibility(VISIBLE);
+        if (isLabelVisible) {
+            bigButtonLabelTextView.setVisibility(VISIBLE);
+        }
 
     }
 
