@@ -1,5 +1,6 @@
 package com.gamerole.floatactionmenulib;
 
+import android.animation.TypeEvaluator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -26,8 +28,8 @@ import com.gamerole.floatactionmenulib.util.ABViewUtil;
 import com.gamerole.floatactionmenulib.widget.CircleButtonDrawable;
 import com.gamerole.floatactionmenulib.widget.CircleButtonProperties;
 import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.IntEvaluator;
 import com.nineoldandroids.animation.ObjectAnimator;
-
 
 
 /**
@@ -44,6 +46,7 @@ public class RapidFloatingActionButton extends FrameLayout implements View.OnCli
      * identificationCode用于确定唯一个RFAB，目前用在通过RapidFloatingActionButtonGroup中获取某一个RFAB
      */
     private String identificationCode = IDENTIFICATION_CODE_NONE;
+    private boolean isExpand=false;
 
     public String getIdentificationCode() {
         return identificationCode;
@@ -219,11 +222,26 @@ public class RapidFloatingActionButton extends FrameLayout implements View.OnCli
 
     @Override
     public void onClick(View v) {
+//        toggle(v);
         if (null != onRapidFloatingActionListener) {
             onRapidFloatingActionListener.onRFABClick();
         }
         if (null != onRapidFloatingButtonSeparateListener) {
             onRapidFloatingButtonSeparateListener.onRFABClick();
+        }
+    }
+
+    private void toggle(View v) {
+        if (isExpand) {
+            ObjectAnimator rotation = ObjectAnimator.ofObject(v, "rotation", new IntEvaluator(), 45, 0);
+            rotation.setDuration(300);
+            rotation.start();
+            isExpand=false;
+        } else {
+            ObjectAnimator rotation = ObjectAnimator.ofObject(v, "rotation", new IntEvaluator(), 0, 45);
+            rotation.setDuration(300);
+            rotation.start();
+            isExpand=true;
         }
     }
 
@@ -278,23 +296,23 @@ public class RapidFloatingActionButton extends FrameLayout implements View.OnCli
     public void onExpandAnimator(AnimatorSet animatorSet) {
         ensureDrawableAnimator();
         ensureDrawableInterpolator();
-//        mDrawableAnimator.cancel();
-//        mDrawableAnimator.setTarget(centerDrawableIv);
-//        mDrawableAnimator.setFloatValues(0, -45f);
-//        mDrawableAnimator.setPropertyName("rotation");
-//        mDrawableAnimator.setInterpolator(mOvershootInterpolator);
-//        animatorSet.playTogether(mDrawableAnimator);
+        mDrawableAnimator.cancel();
+        mDrawableAnimator.setTarget(centerDrawableIv);
+        mDrawableAnimator.setFloatValues(0, -45f);
+        mDrawableAnimator.setPropertyName("rotation");
+        mDrawableAnimator.setInterpolator(mOvershootInterpolator);
+        animatorSet.playTogether(mDrawableAnimator);
     }
 
     public void onCollapseAnimator(AnimatorSet animatorSet) {
         ensureDrawableAnimator();
         ensureDrawableInterpolator();
-//        mDrawableAnimator.cancel();
-//        mDrawableAnimator.setTarget(centerDrawableIv);
-//        mDrawableAnimator.setFloatValues(-45f, 0);
-//        mDrawableAnimator.setPropertyName("rotation");
-//        mDrawableAnimator.setInterpolator(mOvershootInterpolator);
-//        animatorSet.playTogether(mDrawableAnimator);
+        mDrawableAnimator.cancel();
+        mDrawableAnimator.setTarget(centerDrawableIv);
+        mDrawableAnimator.setFloatValues(-45f, 0);
+        mDrawableAnimator.setPropertyName("rotation");
+        mDrawableAnimator.setInterpolator(mOvershootInterpolator);
+        animatorSet.playTogether(mDrawableAnimator);
     }
 
     /**
@@ -313,5 +331,10 @@ public class RapidFloatingActionButton extends FrameLayout implements View.OnCli
         if (null == mOvershootInterpolator) {
             mOvershootInterpolator = new OvershootInterpolator();
         }
+    }
+
+    public RapidFloatingActionButton setButtonDrawableSize(int buttonDrawableSize) {
+        this.buttonDrawableSize = buttonDrawableSize;
+        return this;
     }
 }
